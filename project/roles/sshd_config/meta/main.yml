@@ -1,0 +1,32 @@
+galaxy_info:
+  author: Anthony Pagan
+  description: SSHD Config.
+
+  license: MIT
+
+  min_ansible_version: "2.1"
+
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+    - name: Ubuntu
+      versions:
+        - focal
+        - bionic
+        - xenial
+    - name: CentOS
+      versions:
+        - 8
+        - 7
+    - name: Rocky
+      versions:
+        - 9
+        - 8
+    - name: RedHat
+      versions:
+        - 9
+        - 8
+        - 7
+  galaxy_tags: []
+dependencies: []

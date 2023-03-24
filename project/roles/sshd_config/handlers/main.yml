@@ -1,0 +1,6 @@
+---
+
+- name: Restart SSHD if sshd_config is changed
+  systemd:
+    name: sshd
+    state: restarted

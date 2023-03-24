@@ -1,0 +1,6 @@
+---
+- name: Configure SSHD
+  hosts: managed
+  become: true
+  roles:
+    - sshd_config

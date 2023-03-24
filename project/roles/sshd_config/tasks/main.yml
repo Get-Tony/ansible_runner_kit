@@ -1,0 +1,10 @@
+---
+
+- name: Apply SSHD settings
+  ansible.builtin.lineinfile:
+    path: "{{ sshd_config_file }}"
+    regexp: "^#?{{ item.name }} "
+    line: "{{ item.name }} {{ item.value }}"
+    backup: true
+  loop: "{{ sshd_settings }}"
+  notify: Restart SSHD if sshd_config is changed

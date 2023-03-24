@@ -1,0 +1,14 @@
+---
+ANSIBLE_VERBOSITY: 0
+ANSIBLE_HOST_KEY_CHECKING: false
+ANSIBLE_RETRY_FILES_ENABLED: false
+ANSIBLE_NOCOWS: true
+ANSIBLE_GATHERING: smart
+ANSIBLE_SSH_ARGS: "-o ControlMaster=auto -o ControlPersist=60s"
+
+# Disable logging to syslog on target hosts. default: false
+# ANSIBLE_NO_TARGET_SYSLOG: true
+
+# The free strategy will allow us to run multiple tasks in parallel.
+# This should shorten our overall execution time.
+ANSIBLE_STRATEGY: free

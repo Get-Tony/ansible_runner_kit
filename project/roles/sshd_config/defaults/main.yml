@@ -1,0 +1,14 @@
+---
+sshd_settings:
+  - name: PermitRootLogin
+    value: "yes"
+  - name: PasswordAuthentication
+    value: "yes"
+  - name: PubkeyAuthentication
+    value: "yes"
+  - name: ChallengeResponseAuthentication
+    value: "no"
+  # - name: UsePAM
+  #   value: "yes"
+  # - name: UseDNS
+  #   value: "no"
