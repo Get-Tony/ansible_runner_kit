@@ -1,6 +1,6 @@
 ---
 
 - name: Restart SSHD if sshd_config is changed
-  systemd:
+  ansible.builtin.systemd:
     name: sshd
     state: restarted

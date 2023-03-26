@@ -1,2 +1,4 @@
 ansible
 ansible-runner
+ansible-lint
+click

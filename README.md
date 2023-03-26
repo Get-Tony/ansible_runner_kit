@@ -42,7 +42,7 @@ The project directory structure looks like this:
         ├── README.md
         ├── requirements.dev.txt
         ├── requirements.txt
-        ├── run_playbook.sh
+        ├── ark.py
         └── setup_environment.sh
 
 ### artifacts
@@ -80,7 +80,7 @@ The roles directory contains the roles used by the playbooks.
 - **.gitignore:** Used to exclude files or directories from Git. SSH keys and other sensitive data must be included. More information can be found at [git-scm](https://git-scm.com/docs/gitignore).
 - **requirements.txt:** The Python packages required to run the Ansible playbook.
 - **requirements.dev.txt:** Additional Python packages required for development.
-- **run_playbook.sh:** Runs the named playbook, from the project directory, using Ansible-runner. Limits the artifacts to the last 7 runs.
+- **ark.py:** Runs the named playbook, from the project directory, using Ansible-runner. Limits the artifacts to the last 7 runs.
 - **setup_environment.sh:** Creates a virtual environment and install the required Python packages.
 
 ## Requirements
@@ -109,13 +109,13 @@ To set up the ansible-runner environment, run:
 
 ### Running a Playbook
 
-The `run_playbook.sh` script is used to run the Ansible playbook using Ansible-runner.
+The `ark.py` script is used to run the Ansible playbook using Ansible-runner.
 
 The script takes one argument, which is the name of the playbook file to be run. If no argument is provided, the script will run the playbook `main.yml`.
 
 To run the playbook `project/main.yml` explicitly, run:
 
-        ./run_playbook.sh main.yml
+        ./ark.py main.yml
 
 ### Customizing the Environment
 
@@ -125,7 +125,7 @@ To run the playbook `project/main.yml` explicitly, run:
 
 - New [Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) can be added to the `project/roles` directory.
 
-- To run a different playbook, the playbook name must be passed as an argument to the `run_playbook.sh` script.
+- To run a different playbook, the playbook name must be passed as an argument to the `ark.py` script.
 
 ## License
 
