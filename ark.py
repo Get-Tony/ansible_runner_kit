@@ -1,5 +1,8 @@
 #!.venv/bin/python
 """Ansible Runner Kit CLI."""
+__author__ = "Anthony Pagan <Get-Tony@outlook.com>"
+__version__ = "0.1.0"
+
 import subprocess
 import sys
 from pathlib import Path
@@ -100,16 +103,20 @@ def lint(playbook_file: str) -> None:
         # Lint the specified playbook
         try:
             subprocess.check_output(["ansible-lint", str(playbook_path)])
-        except subprocess.CalledProcessError as error:
-            click.echo(f"Error linting playbook '{playbook_file}': {error}")
+        except subprocess.CalledProcessError as single_error:
+            click.echo(
+                f"Error linting playbook '{playbook_file}': {single_error}"
+            )
     else:
         # Lint all playbooks in the project directory
         for playbook in find_playbooks():
             playbooks_path: Path = PROJECT_DIR / playbook
             try:
                 subprocess.check_output(["ansible-lint", str(playbooks_path)])
-            except subprocess.CalledProcessError as error:
-                click.echo(f"Error linting playbook '{playbook}': {error}")
+            except subprocess.CalledProcessError as list_error:
+                click.echo(
+                    f"Error linting playbook '{playbook}': {list_error}"
+                )
 
 
 @cli.command()
