@@ -1,15 +1,19 @@
-#!/usr/bin/env python3
+#!.venv/bin/python
 """Ansible Runner Kit CLI."""
-
 import subprocess
 import sys
 from pathlib import Path
 from typing import List
 
-import ansible_runner
-import click
-from ansible.inventory.manager import InventoryManager
-from ansible.parsing.dataloader import DataLoader
+try:
+    import ansible_runner
+    import click
+    from ansible.inventory.manager import InventoryManager
+    from ansible.parsing.dataloader import DataLoader
+except ImportError as error:
+    print(f"Error: {error}")
+    print("Please run 'setup.sh' to setup the environment.")
+    sys.exit(1)
 
 ARK_DIR: Path = Path.cwd().resolve()
 PROJECT_DIR: Path = ARK_DIR / "project"
@@ -64,7 +68,7 @@ def run(playbook_file: str, rotate_artifacts: int) -> None:
             click.echo(f" - {playbook}")
         return
 
-    # Create Ansible Runner object
+    # Run the specified playbook
     ansible_runner.run(
         private_data_dir=str(ARK_DIR),
         playbook=str(playbook_path),
