@@ -33,6 +33,11 @@ check_python_version() {
 }
 
 create_virtual_environment() {
+    if ! $PYTHON_EXECUTABLE -m venv --help &>/dev/null; then
+        echo "Error: venv module not found."
+        echo "Please install the python3-venv package."
+        exit 1
+    fi
     if [ -f "$1/pyvenv.cfg" ]; then
         VENV_PROMPT_LINE=$(grep -oP '(?<=^prompt\s=\s).*' "$1/pyvenv.cfg")
         if [ "$VENV_PROMPT_LINE" != "'$VENV_PROMPT'" ]; then
