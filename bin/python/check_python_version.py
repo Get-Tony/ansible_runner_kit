@@ -6,7 +6,7 @@ import argparse
 import sys
 
 
-def main() -> None:
+def check_python_version() -> None:
     """Check the Python version and exit 1 if it is too old."""
     parser = argparse.ArgumentParser(description="Check the Python version.")
     parser.add_argument(
@@ -32,4 +32,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    check_python_version()

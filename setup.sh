@@ -25,11 +25,11 @@ INSTALL_DEV_PACKAGES=false
 
 check_python_version() {
     echo "Checking Python version..."
-    if [ ! -f ./src/check_python_version.py ]; then
-        echo "Error: ./src/check_python_version.py not found."
+    if [ ! -f ./bin/python/check_python_version.py ]; then
+        echo "Error: ./bin/python/check_python_version.py not found."
         exit 1
     fi
-    $PYTHON_EXECUTABLE ./src/check_python_version.py -v "$1"
+    $PYTHON_EXECUTABLE ./bin/python/check_python_version.py -v "$1"
 }
 
 create_virtual_environment() {

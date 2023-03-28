@@ -1,0 +1,49 @@
+- name: Configure firewalld to block incoming traffic by default and allow specified ports
+  hosts: all
+  become: true
+
+  vars:
+    allowed_ports:
+      - port: 22
+        protocol: tcp
+      - port: 80
+        protocol: tcp
+      - port: 443
+        protocol: tcp
+      - port: 53
+        protocol: udp
+      - port: 123
+        protocol: udp
+      # Add any other desired ports with their respective protocols
+
+  tasks:
+    - name: Ensure firewalld is installed and running
+      yum:
+        name: firewalld
+        state: latest
+      notify:
+        - start firewalld
+
+    - name: Allow specified ports
+      firewalld:
+        default_zone: public
+        state: enabled
+        immediate: yes
+        permanent: yes
+        port: "{{ allowed_ports }}"
+      when: allowed_ports | length > 0
+
+    - name: Block incoming traffic by default
+      firewalld:
+        default_zone: public
+        state: enabled
+        immediate: yes
+        permanent: yes
+        block_incoming: yes
+
+  handlers:
+    - name: start firewalld
+      service:
+        name: firewalld
+        state: started
+        enabled: true
