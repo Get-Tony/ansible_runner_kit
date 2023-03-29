@@ -4,6 +4,10 @@ ANSIBLE_HOST_KEY_CHECKING: false
 ANSIBLE_RETRY_FILES_ENABLED: false
 ANSIBLE_NOCOWS: true
 ANSIBLE_GATHERING: smart
+ANSIBLE_FORKS: 10
+ANSIBLE_DEPRECATION_WARNINGS: true
+ANSIBLE_NOCOLOR: true
+ANSIBLE_DISPLAY_SKIPPED_HOSTS: true
 ANSIBLE_SSH_ARGS: "-o ControlMaster=auto -o ControlPersist=60s"
 
 # Disable logging to syslog on target hosts. default: false

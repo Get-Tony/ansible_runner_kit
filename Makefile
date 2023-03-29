@@ -2,7 +2,7 @@
 # Author: Anthony Pagan <Get-Tony@outlook.com>
 # Usage: make [target]
 
-EXCLUDED_DIRS := -path "./venv" -o -path "./env" -o -path "./.venv" -o -path "./.env"
+EXCLUDED_DIRS := -path "./venv" -o -path "./env" -o -path "./.venv" -o -path "./.env" -path "./.git" -o -path "./.mypy_cache" -o -path "./.pytest_cache" -o -path "./.coverage" -o -path "./.ruff_cache"
 PYTHON_FILES := $(shell find . -type d \( $(EXCLUDED_DIRS) \) -prune -o -type f -name "*.py" -print)
 YAML_FILES := $(shell find . -type d \( $(EXCLUDED_DIRS) \) -prune -o -type f \( -name "*.yaml" -o -name "*.yml" \) -print)
 
@@ -27,3 +27,6 @@ lint-with-ruff:
 
 lint-with-ansible:
 	ansible-lint $(YAML_FILES)
+
+wipe-cache:
+	rm -rf .mypy_cache .pytest_cache .coverage .ruff_cache

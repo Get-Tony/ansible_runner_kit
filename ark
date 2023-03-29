@@ -1,0 +1,495 @@
+#!.venv/bin/python
+"""
+Ansible Runner Kit (ARK)
+
+ARK provides a command-line interface for managing and executing
+Ansible playbooks using the ansible-runner package. It validates the project
+structure by checking for required directories and files, and then it offers
+various Ansible-related commands, such as:
+
+- Running a playbook using ansible-runner
+
+- Linting a playbook using ansible-lint
+
+- Displaying all groups a host is a member of
+
+- Displaying all hosts in a group
+
+Usage:
+Execute the script with the desired command and options. For example:
+
+    ./ark run <playbook_file> --limit <target_host> --extra-vars "key=value"
+    ./ark lint <playbook_file>
+    ./ark get_host_groups <target_host>
+    ./ark get_group_hosts <target_group>
+"""
+__author__ = "Anthony Pagan <Get-Tony@outlook.com>"
+__version__ = "0.1.0"
+
+import re
+import subprocess
+import sys
+import tempfile
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Union
+
+try:
+    import ansible_runner
+    import click
+    from ansible.inventory.manager import InventoryManager
+    from ansible.parsing.dataloader import DataLoader
+except ImportError as error:
+    print(f"Error: {error}")
+    print("Please run 'setup.sh' to setup the environment.")
+    sys.exit(1)
+
+ARK_DIR: Path = Path.cwd().resolve()
+PROJECT_DIR: Path = ARK_DIR / "project"
+RUNNER_EXECUTABLE: str = "ansible-runner"
+INVENTORY_DIR: str = "inventory"
+
+
+def validate_inventory_dir() -> None:
+    """Check if the inventory directory exists."""
+    if not Path(INVENTORY_DIR).is_dir():
+        click.echo(f"Inventory directory '{INVENTORY_DIR}' does not exist.")
+        sys.exit(1)
+
+
+def validate_project() -> None:
+    """Check if the current directory is a valid Ansible-Runner input tree."""
+    required_dirs = [
+        ARK_DIR / "project",
+        ARK_DIR / "inventory",
+        ARK_DIR / "env",
+    ]
+    required_files = [
+        ARK_DIR / "project" / "main.yml",
+        ARK_DIR / "env" / "envvars",
+        ARK_DIR / "env" / "ssh_key",
+    ]
+    missing_dirs: List[Union[str, Path]] = []
+    missing_files: List[Union[str, Path]] = []
+
+    # Check for required directories
+    for required_dir in required_dirs:
+        if not required_dir.is_dir():
+            missing_dirs.append(required_dir)
+
+    # Check for required files
+    for required_file in required_files:
+        if not required_file.is_file():
+            missing_files.append(required_file)
+
+    # Report missing directories and files, then exit if any are missing
+    if any(missing_dirs or missing_files):
+        if missing_dirs:
+            click.echo("\nRequired directories are missing:")
+            for dir_ in missing_dirs:
+                click.echo(f"  {dir_}")
+        if missing_files:
+            click.echo("\nRequired files are missing:")
+            for file_ in missing_files:
+                click.echo(f"  {file_}")
+        click.echo("\nPlease correct the issues above then try again.")
+        sys.exit(1)
+
+
+def find_playbooks() -> List[str]:
+    """Find all YAML or YML playbooks in the project directory."""
+    playbooks: List[str] = []
+    for playbook in PROJECT_DIR.glob("*.yml"):
+        playbooks.append(playbook.name)
+    for playbook in PROJECT_DIR.glob("*.yaml"):
+        playbooks.append(playbook.name)
+    return playbooks
+
+
+def find_artifacts(artifacts_dir: str) -> List[Path]:
+    """Find all artifact folders in the artifacts directory."""
+    artifact_root_path = Path(artifacts_dir)
+    artifact_folders = [
+        path
+        for path in artifact_root_path.glob("**")
+        if (path / "stdout").is_file()
+    ]
+    return artifact_folders
+
+
+@click.group()
+def cli() -> None:
+    """Playbook Manager CLI."""
+
+
+@cli.command()
+@click.argument("playbook_file", type=click.Path(exists=False), default="")
+@click.option(
+    "--rotate-artifacts",
+    default=7,
+    type=click.IntRange(1, 31),
+    help="Number of artifacts to keep.",
+)
+@click.option(
+    "--limit",
+    default="",
+    type=str,
+    help="Limit the playbook execution to a specific group or host.",
+)
+@click.option(
+    "--extra-vars",
+    default="",
+    type=str,
+    help="Pass additional variables as key-value pairs.",
+)
+def run(
+    playbook_file: str, rotate_artifacts: int, limit: str, extra_vars: str
+) -> None:
+    """Run an Ansible playbook using ansible-runner."""
+    validate_project()
+    if not playbook_file:
+        click.echo("List of available playbooks:")
+        for playbook in find_playbooks():
+            click.echo(f" - {playbook}")
+        return
+
+    # Check if the playbook file exists in the playbook directory
+    playbook_path: Path = PROJECT_DIR / playbook_file
+    if not playbook_path.is_file():
+        click.echo(f"Invalid argument: '{playbook_file}' was not found.")
+        click.echo("List of available playbooks:")
+        for playbook in find_playbooks():
+            click.echo(f" - {playbook}")
+        return
+
+    # Prepare extra_vars if provided
+    extra_vars_dict = {}
+    if extra_vars:
+        extra_vars_list = extra_vars.split(",")
+        for pair in extra_vars_list:
+            key, value = pair.split("=")
+            extra_vars_dict[key] = value
+
+    # Run the specified playbook
+    ansible_runner.run(
+        private_data_dir=str(ARK_DIR),
+        playbook=str(playbook_path),
+        rotate_artifacts=rotate_artifacts,
+        limit=limit,
+        extravars=extra_vars_dict if extra_vars_dict else None,
+    )
+
+
+@cli.command()
+@click.argument("playbook_file", type=click.Path(exists=False), default="")
+def lint(playbook_file: str) -> None:
+    """Lint an Ansible playbook using ansible-lint."""
+    try:
+        # Check if ansible-lint is installed and get its version
+        subprocess.check_output(["ansible-lint", "--version"])
+    except subprocess.CalledProcessError:
+        click.echo("Warning: ansible-lint is not installed.")
+        return
+
+    if playbook_file:
+        # Check if the playbook file exists in the playbook directory
+        playbook_path: Path = PROJECT_DIR / playbook_file
+        if not playbook_path.is_file():
+            click.echo(f"Invalid argument: '{playbook_file}' was not found.")
+            click.echo("List of available playbooks:")
+            for playbook in find_playbooks():
+                click.echo(f" - {playbook}")
+            return
+
+        # Lint the specified playbook
+        try:
+            subprocess.check_output(["ansible-lint", str(playbook_path)])
+        except subprocess.CalledProcessError as single_error:
+            click.echo(
+                f"Error linting playbook '{playbook_file}': {single_error}"
+            )
+    else:
+        # Lint all playbooks in the project directory
+        for playbook in find_playbooks():
+            playbooks_path: Path = PROJECT_DIR / playbook
+            try:
+                subprocess.check_output(["ansible-lint", str(playbooks_path)])
+            except subprocess.CalledProcessError as list_error:
+                click.echo(
+                    f"Error linting playbook '{playbook}': {list_error}"
+                )
+
+
+@cli.command()
+@click.argument("target_host")
+def get_host_groups(target_host: str) -> None:
+    """
+    Display all groups a host is a member of.
+    """
+    validate_inventory_dir()
+    # Initialize DataLoader and InventoryManager
+    data_loader = DataLoader()
+    inventory = InventoryManager(loader=data_loader, sources=[INVENTORY_DIR])
+
+    # Get host object
+    host = inventory.get_host(target_host)
+
+    if not host:
+        click.echo(f"Host '{target_host}' not found in the inventory.")
+        return
+
+    # Collect the groups the host is a member of
+    groups = []
+    for group in host.groups:
+        groups.append(group.name)
+
+    click.echo(f"Host '{target_host}' is a member of the following groups:")
+    for group in groups:
+        click.echo(f"- {group}")
+
+
+@cli.command()
+@click.argument("target_group")
+def get_group_hosts(target_group: str) -> None:
+    """
+    Display all hosts in a group.
+    """
+    validate_inventory_dir()
+    # Initialize DataLoader and InventoryManager
+    data_loader = DataLoader()
+    inventory = InventoryManager(loader=data_loader, sources=[INVENTORY_DIR])
+
+    # Get group object
+    group = inventory.groups.get(target_group)
+
+    if not group:
+        click.echo(f"Group '{target_group}' not found in the inventory.")
+        return
+
+    # Collect all hosts in the group, including nested and child groups
+    hosts = group.get_hosts()
+
+    click.echo(f"Group '{target_group}' contains the following hosts:")
+    for host in hosts:
+        click.echo(f"- {host.name}")
+
+
+@cli.command()
+@click.option(
+    "--artifacts-dir",
+    default="artifacts",
+    help="Path to the artifacts directory.",
+)
+@click.option(
+    "--last",
+    type=int,
+    default=None,
+    help="Display the last x reports.",
+)
+def report(artifacts_dir: str, last: Optional[int]) -> None:
+    artifact_folders = find_artifacts(artifacts_dir)
+
+    artifact_folders.sort(
+        key=lambda folder: folder.stat().st_mtime, reverse=True
+    )
+
+    if last is not None and last > 0 and last < len(artifact_folders):
+        artifact_folders = artifact_folders[:last]
+
+    for artifact_path in artifact_folders:
+        stdout_path: Path = artifact_path / "stdout"
+
+        with stdout_path.open("r", encoding="utf-8") as stdout_file:
+            content = stdout_file.read()
+        play_recap_regex = re.compile(
+            r"PLAY RECAP\s+\*+\s+(?P<recap>.*?)(\n\n|$)", re.DOTALL
+        )
+        play_recaps = play_recap_regex.findall(content)
+
+        mod_time = stdout_path.stat().st_mtime
+        timestamp = datetime.fromtimestamp(mod_time).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
+        click.echo(f"Report for {artifact_path}:")
+        click.echo("-------------------------")
+        click.echo(f"Play executed at: {timestamp}")
+
+        for recap_tuple in play_recaps:
+            recap = recap_tuple[0]
+            lines = recap.strip().split("\n")
+            for line in lines:
+                host, stats = line.strip().split(":", 1)
+                stats_dict = {}
+                for stat in stats.strip().split(" "):
+                    if "=" in stat:
+                        k, v = stat.split("=")
+                        stats_dict[k] = int(v)
+                click.echo(f"{host.strip()}: {stats_dict}")
+        click.echo("")
+
+
+@click.group()
+def cron() -> None:
+    """Manage cron jobs."""
+
+
+def manage_cron_jobs(
+    user: str,
+    add_or_update_jobs: Optional[List[Dict[str, str]]],
+    remove_jobs: Optional[List[str]],
+) -> None:
+    """Manage cron jobs for a user."""
+    # Read existing cron jobs
+    cron_list = subprocess.check_output(
+        ["crontab", "-u", user, "-l"], text=True
+    ).splitlines()
+
+    if add_or_update_jobs:
+        # Add/update jobs
+        for job in add_or_update_jobs:
+            cron_line = " ".join(
+                f"{job['minute']} {job['hour']} {job['day']}"
+                f"{job['month']} {job['weekday']} {job['job']} # {job['name']}"
+            )
+            found = False
+            for i, line in enumerate(cron_list):
+                if line.endswith(f"# {job['name']}"):
+                    cron_list[i] = cron_line
+                    found = True
+                    break
+            if not found:
+                cron_list.append(cron_line)
+
+    if remove_jobs:
+        # Remove jobs
+        for unwanted_job in remove_jobs:
+            for i, line in enumerate(cron_list):
+                if line.endswith(f"# {unwanted_job}"):
+                    del cron_list[i]
+                    break
+
+    # Update crontab
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp:
+        temp.writelines([f"{line}\n" for line in cron_list])
+        temp.flush()
+        subprocess.run(["crontab", "-u", user, temp.name])
+
+    Path(temp.name).unlink()
+
+
+@cron.command("create")
+@click.option("--user", help="The user for the cron job.", required=True)
+@click.option("--name", help="The name of the cron job.", required=True)
+@click.option("--job", help="The command to be executed.", required=True)
+@click.option("--minute", default="*", help="Minute field of the cron job.")
+@click.option("--hour", default="*", help="Hour field of the cron job.")
+@click.option(
+    "--day", default="*", help="Day of the month field of the cron job."
+)
+@click.option("--month", default="*", help="Month field of the cron job.")
+@click.option(
+    "--weekday", default="*", help="Day of the week field of the cron job."
+)
+def create(
+    user: str,
+    name: str,
+    job: str,
+    minute: str,
+    hour: str,
+    day: str,
+    month: str,
+    weekday: str,
+) -> None:
+    manage_cron_jobs(
+        user,
+        add_or_update_jobs=[
+            {
+                "name": name,
+                "job": job,
+                "minute": minute,
+                "hour": hour,
+                "day": day,
+                "month": month,
+                "weekday": weekday,
+            }
+        ],
+        remove_jobs=None,
+    )
+
+
+@cron.command("delete")
+@click.option("--user", help="The user for the cron job.", required=True)
+@click.option(
+    "--name", help="The name of the cron job to delete.", required=True
+)
+def delete(user: str, name: str) -> None:
+    manage_cron_jobs(user, remove_jobs=[name], add_or_update_jobs=None)
+
+
+@cron.command("update")
+@click.option("--user", help="The user for the cron job.", required=True)
+@click.option(
+    "--name", help="The name of the cron job to update.", required=True
+)
+@click.option("--job", help="The new command to be executed.")
+@click.option("--minute", help="New minute field of the cron job.")
+@click.option("--hour", help="New hour field of the cron job.")
+@click.option("--day", help="New day of the month field of the cron job.")
+@click.option("--month", help="New month field of the cron job.")
+@click.option("--weekday", help="New day of the week field of the cron job.")
+def update(
+    user: str,
+    name: str,
+    job: Optional[str] = None,
+    minute: Optional[str] = None,
+    hour: Optional[str] = None,
+    day: Optional[str] = None,
+    month: Optional[str] = None,
+    weekday: Optional[str] = None,
+) -> None:
+    existing_job = None
+    for line in subprocess.check_output(
+        ["crontab", "-u", user, "-l"], text=True
+    ).splitlines():
+        if line.endswith(f"# {name}"):
+            existing_job = {
+                "minute": line.split()[0],
+                "hour": line.split()[1],
+                "day": line.split()[2],
+                "month": line.split()[3],
+                "weekday": line.split()[4],
+                "job": line.split()[5],
+            }
+        break
+    if existing_job:
+        updated_job = {
+            "name": name,
+            "job": job or existing_job["job"],
+            "minute": minute or existing_job["minute"],
+            "hour": hour or existing_job["hour"],
+            "day": day or existing_job["day"],
+            "month": month or existing_job["month"],
+            "weekday": weekday or existing_job["weekday"],
+        }
+        manage_cron_jobs(
+            user, add_or_update_jobs=[updated_job], remove_jobs=None
+        )
+    else:
+        click.echo(f"No job named {name} found.")
+
+
+@cron.command("list")
+@click.option("--user", help="The user for the cron job.", required=True)
+def list_cron_jobs(user: str) -> None:
+    cron_list = subprocess.check_output(
+        ["crontab", "-u", user, "-l"], text=True
+    ).splitlines()
+    for line in cron_list:
+        click.echo(line)
+
+
+cli.add_command(cron)
+
+if __name__ == "__main__":
+    cli()

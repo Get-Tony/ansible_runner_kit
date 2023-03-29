@@ -1,0 +1,9 @@
+---
+- name: Ansible facts
+  hosts: all
+
+  tasks:
+    - name: Gather all facts
+      ansible.builtin.setup:
+        gather_subset: all
+        gather_timeout: 10
