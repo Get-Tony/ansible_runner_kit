@@ -25,11 +25,11 @@ INSTALL_DEV_PACKAGES=false
 
 check_python_version() {
     echo "Checking Python version..."
-    if [ ! -f ./bin/python/check_python_version.py ]; then
-        echo "Error: ./bin/python/check_python_version.py not found."
+    if [ ! -f ./bin/check_python_version.py ]; then
+        echo "Error: ./bin/check_python_version.py not found."
         exit 1
     fi
-    $PYTHON_EXECUTABLE ./bin/python/check_python_version.py -v "$1"
+    $PYTHON_EXECUTABLE ./bin/check_python_version.py -v "$1"
 }
 
 create_virtual_environment() {
@@ -94,6 +94,8 @@ else
     echo "Using the system Python environment..."
 fi
 
+echo "Installing Ansible-Runner Kit..."
+
 echo "Updating pip..."
 $PYTHON_EXECUTABLE -m pip install --upgrade pip
 
@@ -105,14 +107,6 @@ if $INSTALL_DEV_PACKAGES; then
     install_python_requirements "${REQUIREMENTS_DIR}/${REQ_DEV}"
 fi
 
-if ! $USE_SYSTEM_PYTHON; then
-    echo "Setting shebang line of ./ark.py to ./.venv/bin/python..."
-    sed -i "1s/.*/#!.venv\/bin\/python/" ./ark.py
-    echo ""
-else
-    echo "Setting shebang line of ./ark.py to /usr/bin/env python..."
-    sed -i "1s/.*/#!\/usr\/bin\/env python/" ./ark.py
-    echo ""
-fi
-
-echo "Done!"
+echo ""
+echo "Ansible-Runner Kit setup complete."
+echo ""

@@ -2,3 +2,5 @@ black
 mypy
 ruff
 pylint
+pytest
+pytest-cov

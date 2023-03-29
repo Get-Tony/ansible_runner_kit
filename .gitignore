@@ -23,3 +23,9 @@
 
 # All demo_ files
 **/demo_*
+
+# Cache files
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
