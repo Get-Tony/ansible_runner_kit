@@ -2,7 +2,7 @@
 
 The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to help manage and execute Ansible playbooks, work with inventory, and manage cron jobs related to Ansible tasks. This repository contains the following files:
 
-- setup.sh - A script to set up the development environment for the project.
+- setup.sh - A script to set up the environment for the project.
 - ark.py - The main CLI script for the Ansible Runner Kit.
 
 ## Getting Started
