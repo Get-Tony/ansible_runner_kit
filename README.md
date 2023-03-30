@@ -1,123 +1,60 @@
-
 # Ansible Runner Kit (ARK)
 
-ARK provides a set of tools to define an [Ansible-runner](https://ansible-runner.readthedocs.io/en/latest/) environment and workflow.
+The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to help manage and execute Ansible playbooks, work with inventory, and manage cron jobs related to Ansible tasks. This repository contains the following files:
 
-- [Ansible Runner Kit (ARK)](#ansible-runner-kit-ark)
-  - [Project Structure](#project-structure)
-    - [artifacts](#artifacts)
-    - [env](#env)
-      - [env/ssh\_key](#envssh_key)
-      - [env/envvars](#envenvvars)
-    - [inventory](#inventory)
-    - [project](#project)
-      - [roles](#roles)
-  - [Other files](#other-files)
-  - [Requirements](#requirements)
-    - [Python](#python)
-    - [Operating System](#operating-system)
-  - [Usage](#usage)
-    - [Setup](#setup)
-    - [Running a Playbook](#running-a-playbook)
-    - [Customizing the Environment](#customizing-the-environment)
-  - [License](#license)
-  - [Acknowledgments](#acknowledgments)
+- setup.sh - A script to set up the development environment for the project.
+- ark.py - The main CLI script for the Ansible Runner Kit.
 
-## Project Structure
+## Getting Started
 
-The project directory structure looks like this:
+### Prerequisites
 
-        ansible_runner_kit
-        ├── artifacts
-        ├── env
-        │   ├── envvars
-        │   └── ssh_key
-        ├── .gitignore
-        ├── inventory
-        │   └── <Ansible-Inventory>
-        ├── project
-        │   ├── main.yml
-        │   └── roles
-        │       └── <Ansible-Roles>
-        ├── README.md
-        ├── requirements.dev.txt
-        ├── requirements.txt
-        ├── ark.py
-        └── setup_environment.sh
+Ensure you have Python 3.9.2 or higher installed on your system. You can check your Python version by running:
 
-### artifacts
+    python3 --version
 
-The artifacts directory is used by Ansible-runner to store artifacts from previous runs of the playbook. The ansible fact cache, the playbook output, and the playbook status are stored in this directory.
+### Setting Up the Development Environment
 
-### env
+To set up the development environment, run the setup.sh script. This script creates a virtual environment, installs the required Python packages, and sets up any necessary system packages.
 
-#### env/ssh_key
+    ./setup.sh
 
-The ssh_key directory contains the SSH key used by Ansible-runner to connect to the managed hosts.
+By default, the script creates a virtual environment. If you prefer to use the system Python environment instead, run the script with the --system flag:
 
-#### env/envvars
+    ./setup.sh --system
 
-The envvars file contains environment variables that are used by Ansible-runner.
+To install development packages, use the --dev flag:
 
-### inventory
+    ./setup.sh --dev
 
-The inventory directory contains the inventory files for Ansible.
+After setting up the environment, activate the virtual environment (if you didn't use the --system flag) by running:
 
-- More information: [Ansible Inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html)
+    source .venv/bin/activate
 
-### project
+### Using the Ansible Runner Kit (ARK)
 
-The project directory contains the main playbook file `main.yml` and the roles directory.
+To start using ARK, run the ark.py script with the desired command and options. For example, to list available playbooks:
 
-#### roles
+    python3 ark.py run
 
-The roles directory contains the roles used by the playbooks.
+For detailed information about ARK commands and options, refer to the ARK Command Summary.
 
-- More information: [Ansible Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html)
+## ARK Command Summary
 
-## Other files
+- run - Executes an Ansible playbook in the project.
+- lint - Lints an Ansible playbook using ansible-lint.
+- report - Displays Ansible run report(s).
+- inv - Inventory-related commands.
+  - get_host_groups - Displays all groups a host is a member of.
+  - get_group_hosts - Displays all hosts in a group.
+- cron - Manages cron jobs related to Ansible tasks.
+  - create - Creates a cron job.
+  - delete - Deletes a cron job.
+  - list - Lists all ARK cron jobs for a user.
 
-- **.gitignore:** Used to exclude files or directories from Git. SSH keys and other sensitive data must be included. More information can be found at [git-scm](https://git-scm.com/docs/gitignore).
-- **requirements.txt:** The Python packages required to run the Ansible playbook.
-- **requirements.dev.txt:** Additional Python packages required for development.
-- **ark.py:** Runs the named playbook, from the project directory, using Ansible-runner. Limits the artifacts to the last 7 runs.
-- **setup_environment.sh:** Creates a virtual environment and install the required Python packages.
+For a more detailed summary, please refer to the ARK Information section.
 
-## Requirements
-
-### Python
-
-- [Python 3.9+](https://www.python.org/downloads/)
-
-### Operating System
-
-The Ansible-runner environment was built on [Debian 11](https://www.debian.org/releases/bullseye/). It should work on other Linux distributions as well.
-
-## Usage
-
-### Setup
-
-The following command will create a virtual environment and install the required Python packages.
-
-If the `--dev` argument is included, it will also install packages from the development requirements.
-
-If the virtual environment already exists, the script will exit.
-
-To set up the ansible-runner environment, run:
-
-        source setup_environment.sh [--dev]
-
-### Running a Playbook
-
-The `ark.py` script is used to run the Ansible playbook using Ansible-runner.
-
-The script takes one argument, which is the name of the playbook file to be run. If no argument is provided, the script will run the playbook `main.yml`.
-
-To run the playbook `project/main.yml` explicitly, run:
-
-        ./ark.py main.yml
-
-### Customizing the Environment
+## Customizing the Environment
 
 - The `project` directory contains the main playbook file `main.yml` and the roles directory.
 
@@ -126,6 +63,14 @@ To run the playbook `project/main.yml` explicitly, run:
 - New [Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) can be added to the `project/roles` directory.
 
 - To run a different playbook, the playbook name must be passed as an argument to the `ark.py` script.
+
+## Contributing
+
+If you would like to contribute to this project, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch with your changes.
+3. Submit a pull request with a detailed description of your changes.
 
 ## License
 
@@ -138,5 +83,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Python](https://www.python.org/)
 - [Git](https://git-scm.com/)
 
----
-[Back To Top](#ansible-runner-kit-ark)
+- ARK Author: [Get-Tony](https://github.com/Get-Tony)

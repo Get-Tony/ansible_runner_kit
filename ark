@@ -13,6 +13,9 @@ INTERPRETER="./.venv/bin/python"
 if [ ! -f "$INTERPRETER" ]; then
     echo "Error: $INTERPRETER not found."
     echo "Please run ./setup.sh first."
+    echo ""
+    echo "For custom interpreter defenition, Set the INTERPRETER variable"
+    echo "in this script to the path of your Python interpreter."
     exit 1
 fi
 
