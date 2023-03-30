@@ -26,6 +26,7 @@ def lint_single_playbook(playbook_file: str) -> None:
         return
 
     try:
+        click.echo(f"\nLinting '{playbook_file}'...", nl=False)
         subprocess.check_output(["ansible-lint", str(playbook_path)])
     except subprocess.CalledProcessError as single_error:
         click.echo(f"Error linting playbook '{playbook_file}': {single_error}")
@@ -36,6 +37,7 @@ def lint_all_playbooks() -> None:
     for playbook in find_playbooks():
         playbooks_path: Path = c.PROJECT_DIR / playbook
         try:
+            click.echo(f"\nLinting '{playbook}'...", nl=False)
             subprocess.check_output(["ansible-lint", str(playbooks_path)])
         except subprocess.CalledProcessError as list_error:
             click.echo(f"Error linting playbook '{playbook}': {list_error}")
