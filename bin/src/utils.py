@@ -119,8 +119,8 @@ def extract_playbook_name_from_file(file_path: str) -> Optional[str]:
     if not file_.exists():
         return None
 
-    with file_.open() as f:
-        content = f.read()
+    with file_.open(encoding="utf-8") as command_file:
+        content = command_file.read()
 
     data = json.loads(content)
     command_string = " ".join(data["command"])
@@ -131,9 +131,8 @@ def extract_playbook_name_from_file(file_path: str) -> Optional[str]:
 
     if match:
         return match.group(1)
-    else:
-        print("Playbook name not found in the command string.")
-        return None
+    print("Playbook name not found in the command string.")
+    return None
 
 
 def display_artifact_report(artifact_path: Path) -> None:
@@ -192,7 +191,12 @@ def extract_host_stats(recap: str) -> dict[str, dict[str, int]]:
     return host_stats
 
 
-def validate_playbook(value: str) -> str:
+def validate_playbook(
+    # Callback function. ctx and param are required even if unused!
+    ctx: click.Context,  # pylint: disable=unused-argument
+    param: click.Parameter,  # pylint: disable=unused-argument
+    value: str,
+) -> str:
     """Validate the playbook argument."""
     valid_playbooks = find_playbooks()
     if value not in valid_playbooks:
