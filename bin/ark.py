@@ -68,7 +68,6 @@ def run(
 ) -> None:
     """Run an Project playbook."""
     validate_project()
-    list_available_playbooks(playbook_file)
 
     playbook_path = get_playbook_path(playbook_file)
     if not playbook_path:
