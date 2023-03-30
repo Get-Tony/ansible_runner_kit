@@ -43,9 +43,17 @@ Example `.gitignore` entry:
 
     **/ssh_key
 
-To start using ARK, run the ark.py script with the desired command and options. For example, to list available playbooks:
+To start using ARK, run the ark script with the desired command and options.
 
-    python3 ark.py run
+Ensure you are in the project directory before running the script.
+
+Make ARK executable:
+
+    chmod +x ark
+
+List available playbooks:
+
+    ./ark run
 
 For detailed information about ARK commands and options, refer to the ARK Command Summary.
 
@@ -62,7 +70,9 @@ For detailed information about ARK commands and options, refer to the ARK Comman
   - delete - Deletes a cron job.
   - list - Lists all ARK cron jobs for a user.
 
-For a more detailed summary, please refer to the ARK Information section.
+For detailed information about ARK commands and options, refer to the ARK Help.
+
+    `./ark --help`
 
 ## Customizing the Environment
 
