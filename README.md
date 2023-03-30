@@ -33,6 +33,16 @@ After setting up the environment, activate the virtual environment (if you didn'
 
 ### Using the Ansible Runner Kit (ARK)
 
+Create a new `env/ssh_key` file and add your SSH private key to it. This file will be used to connect to remote hosts.
+
+- **Ensure the SSH key file is not publicly accessible.**
+
+- **If you are using `git`, ensure the`ssh_key`file is in your`.gitignore` file.**
+
+Example `.gitignore` entry:
+
+    **/ssh_key
+
 To start using ARK, run the ark.py script with the desired command and options. For example, to list available playbooks:
 
     python3 ark.py run
