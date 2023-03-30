@@ -1,5 +1,6 @@
 """Ansible-Runner Kit Utilities."""
 
+import json
 import re
 import sys
 from datetime import datetime
@@ -111,6 +112,30 @@ def sort_and_limit_artifacts(
     return artifact_folders
 
 
+def extract_playbook_name_from_file(file_path: str) -> Optional[str]:
+    """Extract the playbook name from the command file."""
+    file_ = Path(file_path)
+
+    if not file_.exists():
+        return None
+
+    with file_.open() as f:
+        content = f.read()
+
+    data = json.loads(content)
+    command_string = " ".join(data["command"])
+    match = re.search(
+        r"project/([\w-]+\.yml)",
+        command_string,
+    )
+
+    if match:
+        return match.group(1)
+    else:
+        print("Playbook name not found in the command string.")
+        return None
+
+
 def display_artifact_report(artifact_path: Path) -> None:
     """Display the report for a single artifact folder."""
     stdout_path: Path = artifact_path / "stdout"
@@ -120,10 +145,13 @@ def display_artifact_report(artifact_path: Path) -> None:
 
     play_recaps = extract_play_recaps(content)
     timestamp = get_artifact_timestamp(stdout_path)
+    playbook_name = extract_playbook_name_from_file(
+        str(artifact_path / "command")
+    )
 
     click.echo(f"Report for {artifact_path}:")
+    click.echo(f"{playbook_name or 'Playbook'} executed at: {timestamp}")
     click.echo("-------------------------")
-    click.echo(f"Play executed at: {timestamp}")
 
     for recap in play_recaps:
         host_stats = extract_host_stats(recap)
