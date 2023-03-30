@@ -37,7 +37,7 @@ Create a new `env/ssh_key` file and add your SSH private key to it. This file wi
 
 - **Ensure the SSH key file is not publicly accessible.**
 
-- **If you are using `git`, ensure the`ssh_key`file is in your`.gitignore` file.**
+- **If you are using `git`, ensure the `ssh_key` file is in your `.gitignore` file.**
 
 Example `.gitignore` entry:
 
