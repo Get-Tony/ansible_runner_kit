@@ -12,12 +12,14 @@ The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to 
     - [Prerequisites](#prerequisites)
     - [Setting Up the Development Environment](#setting-up-the-development-environment)
   - [Using the Ansible Runner Kit (ARK)](#using-the-ansible-runner-kit-ark)
-    - [Safety First](#safety-first)
+    - [SSH Configuration](#ssh-configuration)
     - [Running ARK](#running-ark)
     - [ARK Command Reference](#ark-command-reference)
       - [Basic Commands](#basic-commands)
   - [Customizing the Environment](#customizing-the-environment)
+    - [Ansible Settings](#ansible-settings)
   - [Code of Conduct](#code-of-conduct)
+  - [Security](#security)
   - [Contributing](#contributing)
   - [License](#license)
   - [Under the Hood](#under-the-hood)
@@ -48,7 +50,7 @@ After setting up the environment, activate the virtual environment (if you didn'
 
 ## Using the Ansible Runner Kit (ARK)
 
-### Safety First
+### SSH Configuration
 
 Create a new `env/ssh_key` file and add your SSH private key to it. This file will be used to connect to remote hosts.
 
@@ -109,17 +111,23 @@ The `--user` option will normally default to the current user. If you are runnin
 
 - To run a different playbook, the playbook name must be passed as an argument to the `ark.py` script.
 
+### Ansible Settings
+
+Ansible settings can be customized by adding or removing Ansible environment variables in the `env/envvars` file.
+
+Refer to the [Ansible Configuration Settings](https://docs.ansible.com/ansible/latest/reference_appendices/config.html) for more options and information.
+
 ## Code of Conduct
 
 This project and everyone participating in it is governed by the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [Get-Tony](https://github.com/Get-Tony).
 
+## Security
+
+If you discover a security vulnerability within this project, please submit a report to [Issues](https://github.com/Get-Tony/ansible_runner_kit/issues/new/choose). All security vulnerabilities will be addressed as soon as possible.
+
 ## Contributing
 
-If you would like to contribute to this project, please follow these steps:
-
-1. Fork the repository.
-2. Create a new branch with your changes.
-3. Submit a pull request with a detailed description of your changes.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on the process for submitting pull requests to us.
 
 ## License
 
