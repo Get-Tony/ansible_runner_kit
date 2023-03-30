@@ -2,33 +2,37 @@
 
 The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to help manage and execute Ansible playbooks, work with inventory, and manage cron jobs for established Ansible Playbooks.
 
-## Getting Started
-
-### Table of Contents
+## Table of Contents
 
 - [Ansible Runner Kit (ARK)](#ansible-runner-kit-ark)
+  - [Table of Contents](#table-of-contents)
+  - [Upcoming Changes](#upcoming-changes)
+  - [Prerequisites](#prerequisites)
   - [Getting Started](#getting-started)
-    - [Table of Contents](#table-of-contents)
-    - [Prerequisites](#prerequisites)
     - [Setting Up the Development Environment](#setting-up-the-development-environment)
-  - [Using the Ansible Runner Kit (ARK)](#using-the-ansible-runner-kit-ark)
     - [SSH Configuration](#ssh-configuration)
-    - [Running ARK](#running-ark)
-    - [ARK Command Reference](#ark-command-reference)
-      - [Basic Commands](#basic-commands)
-  - [Customizing the Environment](#customizing-the-environment)
     - [Ansible Settings](#ansible-settings)
+    - [Running ARK](#running-ark)
+    - [Command Reference](#command-reference)
+  - [Customizing the Environment](#customizing-the-environment)
   - [Code of Conduct](#code-of-conduct)
   - [Security](#security)
   - [Contributing](#contributing)
   - [License](#license)
   - [Under the Hood](#under-the-hood)
 
-### Prerequisites
+## Upcoming Changes
+
+- Refactor ARK as a Python package to allow use across multiple projects.
+- Add support for Ansible Vault.
+
+## Prerequisites
 
 Ensure you have Python 3.9.2 or higher installed on your system. You can check your Python version by running:
 
     python3 --version
+
+## Getting Started
 
 ### Setting Up the Development Environment
 
@@ -48,8 +52,6 @@ After setting up the environment, activate the virtual environment (if you didn'
 
     source .venv/bin/activate
 
-## Using the Ansible Runner Kit (ARK)
-
 ### SSH Configuration
 
 Create a new `env/ssh_key` file and add your SSH private key to it. This file will be used to connect to remote hosts.
@@ -61,6 +63,12 @@ Create a new `env/ssh_key` file and add your SSH private key to it. This file wi
 Example `.gitignore` entry to exclude the `ssh_key` file:
 
     **/ssh_key
+
+### Ansible Settings
+
+Ansible settings can be customized by adding or removing Ansible environment variables in the `env/envvars` file.
+
+Refer to the [Ansible Configuration Settings](https://docs.ansible.com/ansible/latest/reference_appendices/config.html) for more options and information.
 
 ### Running ARK
 
@@ -76,13 +84,11 @@ List available playbooks:
 
     ./ark run
 
-### ARK Command Reference
+### Command Reference
 
 For most commands, you can use the `--help` option to display detailed information about the command and its options.
 
 The `--user` option will normally default to the current user. If you are running ARK as a different user, you can specify the user with the `--user` option.
-
-#### Basic Commands
 
 - `help` - Displays ARK help.
 
@@ -110,12 +116,6 @@ The `--user` option will normally default to the current user. If you are runnin
 - New [Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) can be added to the `project/roles` directory.
 
 - To run a different playbook, the playbook name must be passed as an argument to the `ark.py` script.
-
-### Ansible Settings
-
-Ansible settings can be customized by adding or removing Ansible environment variables in the `env/envvars` file.
-
-Refer to the [Ansible Configuration Settings](https://docs.ansible.com/ansible/latest/reference_appendices/config.html) for more options and information.
 
 ## Code of Conduct
 
