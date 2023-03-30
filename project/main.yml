@@ -3,4 +3,7 @@
   hosts: managed
   become: true
   roles:
+    - common
     - sshd_config
+    - ssh_auth
+    - logrotate
