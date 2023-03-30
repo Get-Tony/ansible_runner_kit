@@ -29,7 +29,6 @@ from src.utils import (
     display_artifact_report,
     find_artifacts,
     get_playbook_path,
-    list_available_playbooks,
     sort_and_limit_artifacts,
     validate_inventory_dir,
     validate_playbook,
