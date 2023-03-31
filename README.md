@@ -8,6 +8,7 @@ The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to 
   - [Table of Contents](#table-of-contents)
   - [Prerequisites](#prerequisites)
   - [Upcoming Changes](#upcoming-changes)
+  - [Use Responsibly](#use-responsibly)
   - [Getting Started](#getting-started)
     - [Setting Up the Development Environment](#setting-up-the-development-environment)
     - [SSH Configuration](#ssh-configuration)
@@ -32,6 +33,10 @@ The following system packages are required to run ARK:
 
 - Refactor ARK as a Python package to allow use across multiple projects.
 - Add support for Ansible Vault.
+
+## Use Responsibly
+
+Please be aware that the Ansible Runner Kit (ARK) repository is still in the testing and development phase. It is highly recommended that you thoroughly read and understand the source code before using this tool. The author and contributors are not responsible for any consequences arising from the use of this repository or its contents. By using this repository, you acknowledge that you are using it at your own risk, and you agree to take full responsibility for your actions and any outcomes that may result from them.
 
 ## Getting Started
 
