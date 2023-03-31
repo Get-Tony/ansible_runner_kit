@@ -2,11 +2,11 @@
 sshd_settings:
   - name: PubkeyAuthentication
     value: "yes"
-  #- name: PermitRootLogin
+  # - name: PermitRootLogin
   #  value: "yes"
-  #- name: PasswordAuthentication
+  # - name: PasswordAuthentication
   #  value: "yes"
-  #- name: ChallengeResponseAuthentication
+  # - name: ChallengeResponseAuthentication
   #  value: "no"
   # - name: UsePAM
   #   value: "yes"
