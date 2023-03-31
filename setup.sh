@@ -16,12 +16,31 @@ VENV_PROMPT="ARK Env"
 REQUIREMENTS_DIR="./requirements"
 VENV_DIR="./.venv"
 MINIMUM_PYTHON_VERSION="3.9.2"
-REQ_SYSTEM="system.txt"
 REQ_MAIN="core.txt"
 REQ_DEV="dev.txt"
 
 USE_SYSTEM_PYTHON=false
 INSTALL_DEV_PACKAGES=false
+
+check_required_files_and_folders() {
+    local missing_files_or_folders=false
+    local required_files_or_folders=(
+        "$REQUIREMENTS_DIR"
+        "$REQUIREMENTS_DIR/$REQ_MAIN"
+        "$REQUIREMENTS_DIR/$REQ_DEV"
+        "./bin/check_python_version.py"
+    )
+    for file_or_folder in "${required_files_or_folders[@]}"; do
+        if [ ! -e "$file_or_folder" ]; then
+            echo "Error: $file_or_folder not found."
+            missing_files_or_folders=true
+        fi
+    done
+    if $missing_files_or_folders; then
+        echo "Please make sure all required files and folders are present before running the script."
+        exit 1
+    fi
+}
 
 check_python_version() {
     echo "Checking Python version..."
@@ -40,7 +59,7 @@ create_virtual_environment() {
     fi
     if [ -f "$1/pyvenv.cfg" ]; then
         VENV_PROMPT_LINE=$(grep -oP '(?<=^prompt\s=\s).*' "$1/pyvenv.cfg")
-        if [ "$VENV_PROMPT_LINE" != "'$VENV_PROMPT'" ]; then
+        if [ "$VENV_PROMPT_LINE" != "$VENV_PROMPT" ]; then
             echo "A virtual environment directory already exists with an unrecognized prompt."
             echo "Please delete or move the $1 directory and try again."
             exit 1
@@ -58,20 +77,23 @@ install_python_requirements() {
     $PYTHON_EXECUTABLE -m pip install -r "$1"
 }
 
-install_system_requirements() {
-    echo "Installing system requirements..."
-    if command -v apt-get &>/dev/null; then
-        sudo apt-get update
-        sudo xargs -a "$1" apt-get install -y
-    elif command -v yum &>/dev/null; then
-        sudo yum update -y
-        sudo xargs -a "$1" yum install -y
-    else
-        echo "Unsupported package manager. Please install: $(xargs -a "$1" echo)"
-        exit 1
-    fi
-}
+## Main loop
 
+# Check for required files and folders
+check_required_files_and_folders
+
+# Check if python3 and python3-venv are installed
+if ! command -v $PYTHON_EXECUTABLE &>/dev/null; then
+    echo "Error: python3 not found."
+    echo "Please install python3 and python3-venv before running this script."
+    exit 1
+elif ! $PYTHON_EXECUTABLE -c "import venv" &>/dev/null; then
+    echo "Error: python3-venv not found."
+    echo "Please install python3-venv before running this script."
+    exit 1
+fi
+
+# Parse arguments
 for arg in "$@"; do
     case $arg in
     --system)
@@ -83,10 +105,12 @@ for arg in "$@"; do
     esac
 done
 
+# Check Python version
 if ! check_python_version "$MINIMUM_PYTHON_VERSION"; then
     exit 1
 fi
 
+# Check for system flag else create virtual environment
 if ! $USE_SYSTEM_PYTHON; then
     echo "Creating a virtual environment in ${VENV_DIR} directory..."
     create_virtual_environment "${VENV_DIR}"
@@ -96,13 +120,14 @@ fi
 
 echo "Installing Ansible-Runner Kit..."
 
+# Install or upgrade pip
 echo "Updating pip..."
 $PYTHON_EXECUTABLE -m pip install --upgrade pip
 
-install_system_requirements "${REQUIREMENTS_DIR}/${REQ_SYSTEM}"
-
+# Install Python requirements
 install_python_requirements "${REQUIREMENTS_DIR}/${REQ_MAIN}"
 
+# Install Python development requirements
 if $INSTALL_DEV_PACKAGES; then
     install_python_requirements "${REQUIREMENTS_DIR}/${REQ_DEV}"
 fi

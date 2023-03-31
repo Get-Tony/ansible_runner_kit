@@ -11,12 +11,10 @@ fi
 INTERPRETER="./.venv/bin/python"
 
 if [ ! -f "$INTERPRETER" ]; then
-    echo "Error: $INTERPRETER not found."
-    echo "Please run ./setup.sh first."
-    echo ""
-    echo "For custom interpreter defenition, Set the INTERPRETER variable"
-    echo "in this script to the path of your Python interpreter."
-    exit 1
+    INTERPRETER="python3"
+    echo "Using system environment: $INTERPRETER"
+else
+    echo "Using virtual environment: $INTERPRETER"
 fi
 
 $INTERPRETER ./bin/ark.py "$@"

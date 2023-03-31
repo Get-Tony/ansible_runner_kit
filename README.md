@@ -6,37 +6,38 @@ The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to 
 
 - [Ansible Runner Kit (ARK)](#ansible-runner-kit-ark)
   - [Table of Contents](#table-of-contents)
-  - [Upcoming Changes](#upcoming-changes)
   - [Prerequisites](#prerequisites)
+  - [Upcoming Changes](#upcoming-changes)
   - [Getting Started](#getting-started)
     - [Setting Up the Development Environment](#setting-up-the-development-environment)
     - [SSH Configuration](#ssh-configuration)
     - [Ansible Settings](#ansible-settings)
-    - [Running ARK](#running-ark)
+  - [Running ARK](#running-ark)
     - [Command Reference](#command-reference)
-  - [Customizing the Environment](#customizing-the-environment)
+    - [Customizing the Environment](#customizing-the-environment)
   - [Code of Conduct](#code-of-conduct)
   - [Security](#security)
   - [Contributing](#contributing)
   - [License](#license)
   - [Under the Hood](#under-the-hood)
 
+## Prerequisites
+
+The following system packages are required to run ARK:
+
+- python3
+- python3-venv
+
 ## Upcoming Changes
 
 - Refactor ARK as a Python package to allow use across multiple projects.
 - Add support for Ansible Vault.
 
-## Prerequisites
-
-Ensure you have Python 3.9.2 or higher installed on your system. You can check your Python version by running:
-
-    python3 --version
-
 ## Getting Started
 
 ### Setting Up the Development Environment
 
-To set up the development environment, run the setup.sh script. This script creates a virtual environment, installs the required Python packages, and sets up any necessary system packages.
+To set up the development environment, run the setup.sh script. This script creates a virtual environment then installs the required Python packages.
 
     ./setup.sh
 
@@ -44,7 +45,7 @@ By default, the script creates a virtual environment. If you prefer to use the s
 
     ./setup.sh --system
 
-To install development packages, use the `--dev` flag:
+To install Python development packages, use the `--dev` flag:
 
     ./setup.sh --dev
 
@@ -70,7 +71,7 @@ Ansible settings can be customized by adding or removing Ansible environment var
 
 Refer to the [Ansible Configuration Settings](https://docs.ansible.com/ansible/latest/reference_appendices/config.html) for more options and information.
 
-### Running ARK
+## Running ARK
 
 To start using ARK, run the ark script with the desired command and options.
 
@@ -107,7 +108,7 @@ The `--user` option will normally default to the current user. If you are runnin
 
     `./ark --help`
 
-## Customizing the Environment
+### Customizing the Environment
 
 - The `project` directory contains the main playbook file `main.yml` and the roles directory.
 
