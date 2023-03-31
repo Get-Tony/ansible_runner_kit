@@ -1,8 +1,2 @@
 ---
 # group_vars/controllers.yml
-
-common_packages:
-  - vim
-  - htop
-  - git
-  - ncdu

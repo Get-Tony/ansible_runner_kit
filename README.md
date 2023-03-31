@@ -13,6 +13,7 @@ The Ansible Runner Kit (ARK) is a command-line interface (CLI) tool designed to 
     - [Setting Up the Development Environment](#setting-up-the-development-environment)
     - [SSH Configuration](#ssh-configuration)
     - [Ansible Settings](#ansible-settings)
+    - [Creating Roles](#creating-roles)
   - [Running ARK](#running-ark)
     - [Command Reference](#command-reference)
     - [Customizing the Environment](#customizing-the-environment)
@@ -76,6 +77,14 @@ Ansible settings can be customized by adding or removing Ansible environment var
 
 Refer to the [Ansible Configuration Settings](https://docs.ansible.com/ansible/latest/reference_appendices/config.html) for more options and information.
 
+### Creating Roles
+
+To create a skeleton role, run the `ansible-galaxy` command from the `project/roles` directory.
+
+    ansible-galaxy init <role_name>
+
+More information about creating roles can be found in the [Ansible Roles documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html).
+
 ## Running ARK
 
 To start using ARK, run the ark script with the desired command and options.
@@ -117,9 +126,7 @@ The `--user` option will normally default to the current user. If you are runnin
 
 - The `project` directory contains the main playbook file `main.yml` and the roles directory.
 
-- New [Ansible Playbooks](https://docs.ansible.com/ansible/latest/user_guide/playbooks_intro.html) can be added to the `project` directory.
-
-- New [Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) can be added to the `project/roles` directory.
+- Ansible Playbooks should be added to the `project` directory. [Ansible Playbook Documentation](https://docs.ansible.com/ansible/latest/user_guide/playbooks.html)
 
 - To run a different playbook, the playbook name must be passed as an argument to the `ark.py` script.
 
@@ -129,7 +136,7 @@ This project and everyone participating in it is governed by the [Code of Conduc
 
 ## Security
 
-If you discover a security vulnerability within this project, please submit a report to [Issues](https://github.com/Get-Tony/ansible_runner_kit/issues/new/choose). All security vulnerabilities will be addressed as soon as possible.
+If you discover a security vulnerability within this project, please [Submit an Issue](https://github.com/Get-Tony/ansible_runner_kit/issues/new/choose). All security vulnerabilities will be addressed as soon as possible.
 
 ## Contributing
 

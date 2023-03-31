@@ -1,12 +1,12 @@
 ---
-- name: Check SSH connectivity for all hosts
+- name: Check connectivity for all hosts
   hosts: all
   gather_facts: false
   vars:
     connectivity_timeout: 5
 
   tasks:
-    - name: Check if port 22 (SSH) is open and reachable
+    - name: Check if port 22 (SSH) is reachable
       ansible.builtin.wait_for:
         host: "{{ inventory_hostname }}"
         port: 22
