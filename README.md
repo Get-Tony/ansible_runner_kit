@@ -30,10 +30,11 @@ The following system packages are required to run ARK:
 - python3
 - python3-venv
 
-## Upcoming Changes
+## DEPRECATION NOTICE
 
-- Refactor ARK as a Python package to allow use across multiple projects.
-- Add support for Ansible Vault.
+- Please use [Ark](https://github.com/Get-Tony/Ark)!
+
+Due to a drastic restructuring of the project, this repository will be deprecated in favor of a clean start. Most of the functionality will be moved to the [Ark](https://github.com/Get-Tony/Ark) project.
 
 ## Use Responsibly
 
